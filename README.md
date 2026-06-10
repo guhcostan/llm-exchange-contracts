@@ -1,29 +1,62 @@
+<p align="center">
+  <img src="assets/logo.svg" width="80" height="80" alt="llm.exchange logo"/>
+</p>
+
 # llm.exchange contracts
 
-Source of truth for public integration surfaces: REST (OpenAI-compatible consumer API) and the provider agent WebSocket protocol.
+**Shared API and protocol schemas for the marketplace.**
 
-## Layout
+[Platform](https://github.com/guhcostan/llm-exchange-platform) · [Agent](https://github.com/guhcostan/llm-exchange-agent)
 
+---
+
+## What is this?
+
+Machine-readable contracts for **llm.exchange** — the OpenAI-compatible REST surface, provider REST endpoints, and the **WebSocket agent protocol** between the platform and provider runtimes.
+
+Consumers and providers implement against these schemas; the platform and agent repos are the reference implementations.
+
+---
+
+## Contents
+
+| Path | Description |
+|------|-------------|
+| `openapi/` | REST API — auth, billing, OpenAI-compatible `/v1/chat/completions` |
+| `agent-protocol/` | WebSocket messages — registration, inference jobs, heartbeats |
+
+---
+
+## Why a separate repo?
+
+- **Version independently** — bump protocol without redeploying the whole platform
+- **Public reference** — providers can integrate without cloning private platform code
+- **CI validation** — lint OpenAPI and JSON Schema on every change
+
+---
+
+## Usage
+
+**Validate OpenAPI** (example):
+
+```bash
+npx @redocly/cli lint openapi/platform.yaml
 ```
-contracts/
-├── openapi/platform-v1.yaml      # Consumer + dashboard REST (stub)
-├── agent-protocol/v1.schema.json # WebSocket envelope + payloads
-└── agent-protocol/CHANGELOG.md
-```
 
-## Compatibility matrix
+**Agent implementers:** read `agent-protocol/` for message types and lifecycle (`register` → `job` → `result`).
 
-| Platform API | Agent mínimo | Protocol |
-|--------------|--------------|----------|
-| 1.0.x        | 0.1.0        | 1        |
+---
 
-## Related repos
+## FAQ
 
-- [guhcostan/llm-exchange-platform](https://github.com/guhcostan/llm-exchange-platform) (private) — API implementation
-- [guhcostan/llm-exchange-agent](https://github.com/guhcostan/llm-exchange-agent) — agent implementation
+**Is the OpenAI surface stable?**  
+MVP — `chat/completions` with streaming is the primary contract. Breaking changes will be versioned in path or header before mainnet.
 
-> When org `llm-exchange` is created, repos move to `github.com/llm-exchange/*`.
+**Where is the live API?**  
+Development: `http://localhost:8080`. Production target: `https://api.llm.exchange`.
 
-## Status
+---
 
-**Stub release.** OpenAPI covers `/v1/chat/completions` and `/v1/models` only; expand from platform handlers and `docs/api.md`. JSON Schema mirrors `agenthub/messages.go` types.
+## License
+
+MIT
