@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: llm.exchange Platform API
+  version: 1.0.0
+  description: |
+    Consumer (OpenAI-compatible) and dashboard REST endpoints.
+    Stub — expand from docs/api.md and platform handlers.
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/chat/completions:
+    post:
+      summary: OpenAI-compatible chat completions
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, messages]
+              properties:
+                model:
+                  type: string
+                messages:
+                  type: array
+                  items:
+                    type: object
+                stream:
+                  type: boolean
+      responses:
+        "200":
+          description: Completion or SSE stream
+  /v1/models:
+    get:
+      summary: List available models from online providers
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Model list
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      description: Consumer API key (lsk_...)

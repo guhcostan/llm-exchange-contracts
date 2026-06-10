@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/guhcostan/llm-exchange-contracts/agent-protocol/v1.schema.json",
+  "title": "llm.exchange Agent WebSocket Protocol v1",
+  "description": "JSON envelope messages on GET /ws/agent (provider token auth). Mirrors apps/api/internal/agenthub/messages.go.",
+  "type": "object",
+  "required": ["type", "data"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["register", "heartbeat", "job", "chunk", "complete", "error"]
+    },
+    "data": {}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "type": { "const": "register" },
+        "data": { "$ref": "#/$defs/RegisterData" }
+      }
+    },
+    {
+      "properties": {
+        "type": { "const": "heartbeat" },
+        "data": { "type": "object" }
+      }
+    },
+    {
+      "properties": {
+        "type": { "const": "job" },
+        "data": { "$ref": "#/$defs/JobData" }
+      }
+    },
+    {
+      "properties": {
+        "type": { "const": "chunk" },
+        "data": { "$ref": "#/$defs/ChunkData" }
+      }
+    },
+    {
+      "properties": {
+        "type": { "const": "complete" },
+        "data": { "$ref": "#/$defs/CompleteData" }
+      }
+    },
+    {
+      "properties": {
+        "type": { "const": "error" },
+        "data": { "$ref": "#/$defs/ErrorData" }
+      }
+    }
+  ],
+  "$defs": {
+    "Offering": {
+      "type": "object",
+      "required": ["model_id", "price_input_per_million", "price_output_per_million"],
+      "properties": {
+        "model_id": { "type": "string" },
+        "price_input_per_million": { "type": "number" },
+        "price_output_per_million": { "type": "number" }
+      }
+    },
+    "RegisterData": {
+      "type": "object",
+      "required": ["runtime", "runtime_url", "offerings"],
+      "properties": {
+        "runtime": { "type": "string", "enum": ["ollama", "vllm"] },
+        "runtime_url": { "type": "string", "format": "uri" },
+        "offerings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Offering" }
+        }
+      }
+    },
+    "JobData": {
+      "type": "object",
+      "required": ["job_id", "model", "messages", "stream"],
+      "properties": {
+        "job_id": { "type": "string" },
+        "model": { "type": "string" },
+        "messages": {},
+        "stream": { "type": "boolean" }
+      }
+    },
+    "ChunkData": {
+      "type": "object",
+      "required": ["job_id", "delta"],
+      "properties": {
+        "job_id": { "type": "string" },
+        "delta": { "type": "string" }
+      }
+    },
+    "CompleteData": {
+      "type": "object",
+      "required": ["job_id", "tokens_in", "tokens_out"],
+      "properties": {
+        "job_id": { "type": "string" },
+        "tokens_in": { "type": "integer" },
+        "tokens_out": { "type": "integer" }
+      }
+    },
+    "ErrorData": {
+      "type": "object",
+      "required": ["job_id", "message"],
+      "properties": {
+        "job_id": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}
