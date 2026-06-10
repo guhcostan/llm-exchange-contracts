@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" width="80" height="80" alt="llm.exchange logo"/>
+  <img src="assets/logo.png" width="80" height="80" alt="llm.exchange logo"/>
 </p>
 
 # llm.exchange contracts
